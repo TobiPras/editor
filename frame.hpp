@@ -17,6 +17,7 @@ private:
 
     void render(wxAutoBufferedPaintDC& dc);
     void draw(wxAutoBufferedPaintDC& dc, std::string str, uint32_t row);
+    void draw_pos(wxAutoBufferedPaintDC& dc);
 
     wxPanel* panel_;
     Editor editor_;

@@ -19,10 +19,12 @@ public:
 
     void write_text(char chr);
     void delete_text();
-    void line_break();
+    void new_line();
     void move(Direction direction);
 
     std::vector<std::string> get_text() const { return text_; }
+    std::string string_from_pos();
+
     uint64_t get_line() const { return line_; }
     uint64_t get_pos() const { return pos_; }
 private:

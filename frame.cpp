@@ -37,7 +37,7 @@ void MainFrame::on_keydown(wxKeyEvent& event) {
             editor_.delete_text();
             break;
         case 13:
-            editor_.line_break();
+            editor_.new_line();
             break;
         case 314:
             editor_.move(Direction::left);
@@ -69,6 +69,8 @@ void MainFrame::render(wxAutoBufferedPaintDC& dc) {
         draw(dc, str, row);
         row++;
     }
+
+    draw_pos(dc);
 }
 
 
@@ -78,5 +80,18 @@ void MainFrame::draw(wxAutoBufferedPaintDC& dc, std::string str, uint32_t row) {
 
     dc.DrawText(line, offset, row * pixel_height + offset);
 }
+
+
+void MainFrame::draw_pos(wxAutoBufferedPaintDC& dc) {
+    std::string line = editor_.get_text()[editor_.get_line()];
+    wxString line_till_pos(line.substr(0, editor_.get_pos()));
+    wxSize line_till_pos_size = dc.GetTextExtent(line_till_pos);
+
+    wxString position("|");
+    dc.DrawText(position, offset + line_till_pos_size.GetWidth(), editor_.get_line() * pixel_height + offset);
+}
+
+
+
 
 
