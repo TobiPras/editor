@@ -5,6 +5,7 @@
 
 #include <wx/wx.h>
 #include <wx/dcbuffer.h>
+#include <wx/scrolwin.h>
 
 
 class MainFrame : public wxFrame {
@@ -19,11 +20,11 @@ private:
     void draw(wxAutoBufferedPaintDC& dc, std::string str, uint32_t row);
     void draw_pos(wxAutoBufferedPaintDC& dc);
 
-    wxPanel* panel_;
+    wxScrolledWindow* panel_;
     Editor editor_;
 
-    uint32_t pixel_height = 15;
-    uint32_t offset = 5;
+    int pixel_height = 15;
+    int offset = 15;
 };
 
 #endif

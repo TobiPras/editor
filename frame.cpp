@@ -8,11 +8,12 @@
 
 MainFrame::MainFrame(const wxString& title)
     : wxFrame(nullptr, wxID_ANY, title) {
-    panel_ = new wxPanel(this);
-
-    CreateStatusBar();
-    panel_->SetFocus();
+    panel_ = new wxScrolledWindow(this, wxID_ANY);
+    panel_->SetScrollRate(offset, pixel_height);
     panel_->SetBackgroundStyle(wxBG_STYLE_PAINT);
+    panel_->SetFocus();
+
+    //CreateStatusBar();
 
     panel_->Bind(wxEVT_CHAR, &MainFrame::on_key_input, this);
     panel_->Bind(wxEVT_KEY_DOWN, &MainFrame::on_keydown, this);
@@ -31,7 +32,7 @@ void MainFrame::on_key_input(wxKeyEvent& event) {
 
 
 void MainFrame::on_keydown(wxKeyEvent& event) {
-    std::cout << event.GetKeyCode() << std::endl;
+    //std::cout << event.GetKeyCode() << std::endl;
     switch(event.GetKeyCode()) {
         case 8:
             editor_.delete_text();
@@ -59,24 +60,31 @@ void MainFrame::on_keydown(wxKeyEvent& event) {
 
 void MainFrame::on_paint([[maybe_unused]] wxPaintEvent& event) {
     wxAutoBufferedPaintDC dc(panel_);
+    panel_->DoPrepareDC(dc);
     render(dc);
 }
 
 
 void MainFrame::render(wxAutoBufferedPaintDC& dc) {
+    dc.SetFont(wxFontInfo(10).Family(wxFONTFAMILY_TELETYPE));
+    int max_width = 0;
     uint32_t row = 0;
+
     for (std::string str : editor_.get_text()) {
+        wxSize str_size = dc.GetTextExtent(wxString(str));
+        if (str_size.GetWidth() > max_width) max_width = str_size.GetWidth();
         draw(dc, str, row);
         row++;
     }
 
     draw_pos(dc);
+
+    panel_->SetVirtualSize(max_width + 2 * offset, row * pixel_height + 2 * offset);
 }
 
 
 void MainFrame::draw(wxAutoBufferedPaintDC& dc, std::string str, uint32_t row) {
     wxString line(str);
-    dc.SetFont(wxFontInfo(10));
 
     dc.DrawText(line, offset, row * pixel_height + offset);
 }
@@ -88,7 +96,13 @@ void MainFrame::draw_pos(wxAutoBufferedPaintDC& dc) {
     wxSize line_till_pos_size = dc.GetTextExtent(line_till_pos);
 
     wxString position("|");
-    dc.DrawText(position, offset + line_till_pos_size.GetWidth(), editor_.get_line() * pixel_height + offset);
+
+    dc.DrawText(
+        position,
+        static_cast<wxCoord>(offset + line_till_pos_size.GetWidth()),
+        static_cast<wxCoord>(editor_.get_line() * pixel_height + offset)
+    );
+
 }
 
 

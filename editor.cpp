@@ -51,8 +51,6 @@ std::string Editor::string_from_pos() {
         sub = text_[line_].substr(pos_);
         text_[line_].erase(pos_);
     }
-    std::cout << sub << std::endl;
-    std::cout << text_[line_] << std::endl;
     return sub;
 }
 
