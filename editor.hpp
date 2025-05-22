@@ -6,6 +6,12 @@
 #include <vector>
 #include <string>
 
+enum class Direction {
+    left,
+    up,
+    right,
+    down,
+};
 
 class Editor {
 public:
@@ -14,14 +20,15 @@ public:
     void write_text(char chr);
     void delete_text();
     void line_break();
+    void move(Direction direction);
 
     std::vector<std::string> get_text() const { return text_; }
-    uint32_t get_line() const { return line_; }
-    uint32_t get_pos() const { return pos_; }
+    uint64_t get_line() const { return line_; }
+    uint64_t get_pos() const { return pos_; }
 private:
     std::vector<std::string> text_ = {""};
-    uint32_t line_ = 0;
-    uint32_t pos_ = 0;
+    uint64_t line_ = 0;
+    uint64_t pos_ = 0;
 };
 
 

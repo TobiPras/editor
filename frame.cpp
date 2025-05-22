@@ -1,4 +1,5 @@
 #include "frame.hpp"
+#include "editor.hpp"
 
 #include <iostream>
 #include <string>
@@ -22,7 +23,7 @@ MainFrame::MainFrame(const wxString& title)
 void MainFrame::on_key_input(wxKeyEvent& event) {
     auto key = event.GetKeyCode();
     //std::cout << key << std::endl;
-    if ((key >= 65 && key <= 90) || (key >= 97 && key <= 122) || key == 32) {
+    if (key >= 32 && key <= 126) {
         editor_.write_text(char(event.GetKeyCode()));
     }
     Refresh();
@@ -30,13 +31,26 @@ void MainFrame::on_key_input(wxKeyEvent& event) {
 
 
 void MainFrame::on_keydown(wxKeyEvent& event) {
-    //std::cout << event.GetKeyCode() << std::endl;
+    std::cout << event.GetKeyCode() << std::endl;
     switch(event.GetKeyCode()) {
         case 8:
             editor_.delete_text();
             break;
         case 13:
             editor_.line_break();
+            break;
+        case 314:
+            editor_.move(Direction::left);
+            break;
+        case 315:
+            editor_.move(Direction::up);
+            break;
+        case 316:
+            editor_.move(Direction::right);
+            break;
+        case 317:
+            editor_.move(Direction::down);
+            break;
     }
     Refresh();
     event.Skip();
