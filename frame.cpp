@@ -1,0 +1,68 @@
+#include "frame.hpp"
+
+#include <iostream>
+#include <string>
+#include <wx/wx.h>
+#include <wx/spinctrl.h>
+
+MainFrame::MainFrame(const wxString& title)
+    : wxFrame(nullptr, wxID_ANY, title) {
+    panel_ = new wxPanel(this);
+
+    CreateStatusBar();
+    panel_->SetFocus();
+    panel_->SetBackgroundStyle(wxBG_STYLE_PAINT);
+
+    panel_->Bind(wxEVT_CHAR, &MainFrame::on_key_input, this);
+    panel_->Bind(wxEVT_KEY_DOWN, &MainFrame::on_keydown, this);
+    panel_->Bind(wxEVT_PAINT, &MainFrame::on_paint, this);
+}
+
+
+void MainFrame::on_key_input(wxKeyEvent& event) {
+    auto key = event.GetKeyCode();
+    //std::cout << key << std::endl;
+    if ((key >= 65 && key <= 90) || (key >= 97 && key <= 122) || key == 32) {
+        editor_.write_text(char(event.GetKeyCode()));
+    }
+    Refresh();
+}
+
+
+void MainFrame::on_keydown(wxKeyEvent& event) {
+    //std::cout << event.GetKeyCode() << std::endl;
+    switch(event.GetKeyCode()) {
+        case 8:
+            editor_.delete_text();
+            break;
+        case 13:
+            editor_.line_break();
+    }
+    Refresh();
+    event.Skip();
+}
+
+
+void MainFrame::on_paint([[maybe_unused]] wxPaintEvent& event) {
+    wxAutoBufferedPaintDC dc(panel_);
+    render(dc);
+}
+
+
+void MainFrame::render(wxAutoBufferedPaintDC& dc) {
+    uint32_t row = 0;
+    for (std::string str : editor_.get_text()) {
+        draw(dc, str, row);
+        row++;
+    }
+}
+
+
+void MainFrame::draw(wxAutoBufferedPaintDC& dc, std::string str, uint32_t row) {
+    wxString line(str);
+    dc.SetFont(wxFontInfo(10));
+
+    dc.DrawText(line, offset, row * pixel_height + offset);
+}
+
+
