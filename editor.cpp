@@ -1,5 +1,51 @@
 #include "editor.hpp"
 
+
+void Editor::set_filename(std::string filename) {
+    filename_ = filename;
+    load_file();
+}
+
+
+void Editor::load_file() {
+    std::ifstream in(filename_);
+    if (!in.is_open()) {
+        text_.push_back("");
+        return ;
+    }
+
+    std::string line;
+    while (std::getline(in, line)) {
+        text_.push_back(line);
+    }
+    in.close();
+}
+
+
+void Editor::save_file() {
+    if (filename_.empty()) {
+        filename_input_ = true;
+        return ;
+    }
+    create_file();
+}
+
+
+void Editor::create_file() {
+    std::ofstream out(filename_);
+    if (!out.is_open()) {
+        std::cerr << "Failed to create file: " << filename_ << std::endl;
+        return;
+    }
+
+    for (const auto& line : text_) {
+        out << line << '\n';
+    }
+    out.close();
+    filename_input_ = false;
+}
+
+
 void Editor::write_text(char chr) {
     std::string& line = text_[line_];
     if (pos_ == line.size()) {

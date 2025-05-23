@@ -6,7 +6,7 @@
 #include <wx/wx.h>
 #include <wx/spinctrl.h>
 
-MainFrame::MainFrame(const wxString& title)
+MainFrame::MainFrame(const wxString& title, std::string filename)
     : wxFrame(nullptr, wxID_ANY, title) {
     panel_ = new wxScrolledWindow(this, wxID_ANY);
     panel_->SetScrollRate(offset, pixel_height);
@@ -18,14 +18,24 @@ MainFrame::MainFrame(const wxString& title)
     panel_->Bind(wxEVT_CHAR, &MainFrame::on_key_input, this);
     panel_->Bind(wxEVT_KEY_DOWN, &MainFrame::on_keydown, this);
     panel_->Bind(wxEVT_PAINT, &MainFrame::on_paint, this);
+
+    editor_.set_filename(filename);
 }
 
 
 void MainFrame::on_key_input(wxKeyEvent& event) {
-    auto key = event.GetKeyCode();
+    char key = char(event.GetKeyCode());
     //std::cout << key << std::endl;
-    if (key >= 32 && key <= 126) {
-        editor_.write_text(char(event.GetKeyCode()));
+    if (editor_.is_filename_input()) {
+        if (key == 13) {
+            editor_.save_file();
+        } else if (key == 8) {
+            editor_.delete_filename();
+        } else if (key >= 32 && key <= 126) {
+            editor_.write_filename(key);
+        }
+    } else if (key >= 32 && key <= 126) {
+        editor_.write_text(key);
     }
     Refresh();
 }
@@ -33,25 +43,31 @@ void MainFrame::on_key_input(wxKeyEvent& event) {
 
 void MainFrame::on_keydown(wxKeyEvent& event) {
     //std::cout << event.GetKeyCode() << std::endl;
-    switch(event.GetKeyCode()) {
-        case 8:
-            editor_.delete_text();
-            break;
-        case 13:
-            editor_.string_from_pos();
-            break;
-        case 314:
-            editor_.move(Direction::left);
-            break;
-        case 315:
-            editor_.move(Direction::up);
-            break;
-        case 316:
-            editor_.move(Direction::right);
-            break;
-        case 317:
-            editor_.move(Direction::down);
-            break;
+    if (event.GetKeyCode() == 'S' && event.ControlDown()) {
+        editor_.save_file();
+        return;
+    }
+    if (!editor_.is_filename_input()) {
+        switch(event.GetKeyCode()) {
+            case 8:
+                editor_.delete_text();
+                break;
+            case 13:
+                editor_.string_from_pos();
+                break;
+            case 314:
+                editor_.move(Direction::left);
+                break;
+            case 315:
+                editor_.move(Direction::up);
+                break;
+            case 316:
+                editor_.move(Direction::right);
+                break;
+            case 317:
+                editor_.move(Direction::down);
+                break;
+        }
     }
     Refresh();
     event.Skip();
@@ -66,9 +82,14 @@ void MainFrame::on_paint([[maybe_unused]] wxPaintEvent& event) {
 
 
 void MainFrame::render(wxAutoBufferedPaintDC& dc) {
-    dc.SetFont(wxFontInfo(10).Family(wxFONTFAMILY_TELETYPE));
+    dc.SetFont(wxFontInfo(11).Family(wxFONTFAMILY_TELETYPE));
+    dc.SetTextForeground(wxColour(255, 255, 255));
+
     int max_width = 0;
     uint32_t row = 0;
+
+    draw_pos(dc);
+    dc.SetTextForeground(wxColour(220, 220, 220));
 
     for (std::string str : editor_.get_text()) {
         wxSize str_size = dc.GetTextExtent(wxString(str));
@@ -76,8 +97,6 @@ void MainFrame::render(wxAutoBufferedPaintDC& dc) {
         draw(dc, str, row);
         row++;
     }
-
-    draw_pos(dc);
 
     panel_->SetVirtualSize(max_width + 2 * offset, row * pixel_height + 2 * offset);
 }
@@ -99,8 +118,8 @@ void MainFrame::draw_pos(wxAutoBufferedPaintDC& dc) {
 
     dc.DrawText(
         position,
-        static_cast<wxCoord>(offset + line_till_pos_size.GetWidth()),
-        static_cast<wxCoord>(editor_.get_line() * pixel_height + offset)
+        static_cast<wxCoord>(offset + line_till_pos_size.GetWidth() - 4),
+        static_cast<wxCoord>(editor_.get_line() * pixel_height + offset - 1)
     );
 
 }

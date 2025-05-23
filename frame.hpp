@@ -10,7 +10,7 @@
 
 class MainFrame : public wxFrame {
 public:
-    MainFrame(const wxString& title);
+    MainFrame(const wxString& title, std::string filename = "");
 private:
     void on_key_input(wxKeyEvent& event);
     void on_keydown(wxKeyEvent& event);

@@ -2,7 +2,11 @@
 #include "frame.hpp"
 
 bool App::OnInit() {
-  MainFrame* mainFrame = new MainFrame("Text Editor");
+  std::string filename;
+  if (argc > 1) {
+    filename = argv[1];
+  }
+  MainFrame* mainFrame = new MainFrame("Text Editor", filename);
   mainFrame->SetClientSize(800, 600);
   mainFrame->Center();
   mainFrame->Show();
