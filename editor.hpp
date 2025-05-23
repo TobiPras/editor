@@ -19,11 +19,11 @@ public:
 
     void write_text(char chr);
     void delete_text();
-    void new_line();
+    void new_line(std::string str = "");
     void move(Direction direction);
+    void string_from_pos();
 
     std::vector<std::string> get_text() const { return text_; }
-    std::string string_from_pos();
 
     uint64_t get_line() const { return line_; }
     uint64_t get_pos() const { return pos_; }

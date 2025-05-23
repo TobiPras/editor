@@ -38,7 +38,7 @@ void MainFrame::on_keydown(wxKeyEvent& event) {
             editor_.delete_text();
             break;
         case 13:
-            editor_.new_line();
+            editor_.string_from_pos();
             break;
         case 314:
             editor_.move(Direction::left);

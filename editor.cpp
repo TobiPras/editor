@@ -33,25 +33,24 @@ void Editor::delete_text() {
 }
 
 
-void Editor::new_line() {
-    std::string sub = string_from_pos();
+void Editor::new_line(std::string str) {
     if (line_ < text_.size() - 1) {
-        text_.insert(text_.begin() + line_ + 1, sub);
+        text_.insert(text_.begin() + line_ + 1, str);
     } else {
-        text_.push_back(sub);
+        text_.push_back(str);
     }
     line_++;
     pos_ = 0;
 }
 
 
-std::string Editor::string_from_pos() {
+void Editor::string_from_pos() {
     std::string sub = "";
     if (pos_ <= text_[line_].size()) {
         sub = text_[line_].substr(pos_);
         text_[line_].erase(pos_);
     }
-    return sub;
+    new_line(sub);
 }
 
 
@@ -70,8 +69,11 @@ void Editor::move(Direction direction) {
             break;
         case Direction::right:
             if (pos_ < text_[line_].size()) pos_++;
-            else if (line_ < text_.size()) {
+            else if (line_ == text_.size() - 1) {
                 new_line();
+            } else {
+                line_++;
+                pos_ = 0;
             }
             break;
         case Direction::down:
