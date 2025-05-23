@@ -13,7 +13,8 @@ MainFrame::MainFrame(const wxString& title, std::string filename)
     panel_->SetBackgroundStyle(wxBG_STYLE_PAINT);
     panel_->SetFocus();
 
-    //CreateStatusBar();
+    status_bar_ = CreateStatusBar();
+    status_bar_->SetBackgroundColour(wxColour(35, 35, 35));
 
     panel_->Bind(wxEVT_CHAR, &MainFrame::on_key_input, this);
     panel_->Bind(wxEVT_KEY_DOWN, &MainFrame::on_keydown, this);
@@ -34,6 +35,10 @@ void MainFrame::on_key_input(wxKeyEvent& event) {
         } else if (key >= 32 && key <= 126) {
             editor_.write_filename(key);
         }
+        if (editor_.is_filename_input()) {
+            std::string str = "filename: " + editor_.get_filename();
+            status_bar_->SetStatusText(str);
+        } else status_bar_->SetStatusText("");
     } else if (key >= 32 && key <= 126) {
         editor_.write_text(key);
     }
@@ -45,6 +50,9 @@ void MainFrame::on_keydown(wxKeyEvent& event) {
     //std::cout << event.GetKeyCode() << std::endl;
     if (event.GetKeyCode() == 'S' && event.ControlDown()) {
         editor_.save_file();
+        if (editor_.is_filename_input()) {
+            status_bar_->SetStatusText("filename: ");
+        }
         return;
     }
     if (!editor_.is_filename_input()) {

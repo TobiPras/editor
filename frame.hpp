@@ -21,6 +21,7 @@ private:
     void draw_pos(wxAutoBufferedPaintDC& dc);
 
     wxScrolledWindow* panel_;
+    wxStatusBar *status_bar_;
     Editor editor_;
 
     int pixel_height = 15;
