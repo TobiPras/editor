@@ -22,6 +22,22 @@ void Editor::load_file() {
 }
 
 
+void Editor::set_line(uint64_t line) {
+    line_ = line;
+    if (line_ >= text_.size()) {
+        line_ = text_.size() - 1;
+    }
+}
+
+
+void Editor::set_pos(uint64_t pos) {
+    pos_ = pos;
+    if (pos_ >= text_[line_].size()) {
+        pos_ = text_[line_].size();
+    }
+}
+
+
 void Editor::save_file() {
     if (filename_.empty()) {
         filename_input_ = true;

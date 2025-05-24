@@ -14,7 +14,8 @@ public:
 private:
     void on_key_input(wxKeyEvent& event);
     void on_keydown(wxKeyEvent& event);
-    void on_paint(wxPaintEvent& dc);
+    void on_paint(wxPaintEvent& event);
+    void on_left_click(wxMouseEvent& event);
 
     void render(wxAutoBufferedPaintDC& dc);
     void draw(wxAutoBufferedPaintDC& dc, std::string str, uint32_t row);
@@ -24,6 +25,8 @@ private:
     wxStatusBar *status_bar_;
     Editor editor_;
 
+    int text_width_ = -1;
+    int text_height_ = -1;
     int pixel_height = 15;
     int offset = 15;
 };

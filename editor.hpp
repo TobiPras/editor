@@ -31,6 +31,9 @@ public:
     void delete_filename() { filename_.pop_back(); }
     void create_file();
 
+    void set_line(uint64_t line);
+    void set_pos(uint64_t pos);
+
     std::vector<std::string> get_text() const { return text_; }
 
     std::string get_filename() const { return filename_; }
