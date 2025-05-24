@@ -42,6 +42,7 @@ void MainFrame::on_key_input(wxKeyEvent& event) {
             status_bar_->SetStatusText(str);
         } else status_bar_->SetStatusText("");
     } else if (key >= 32 && key <= 126) {
+        if (key >= 58 && key <= 61) return ;
         editor_.write_text(key);
     }
     Refresh();
