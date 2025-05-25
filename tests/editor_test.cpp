@@ -175,5 +175,135 @@ TEST_CASE("Set line and pos", "[Set]") {
 
 
 TEST_CASE("Moving with arrow keys", "[Move]") {
+    Editor ed;
 
+    SECTION("move left without text") {
+        ed.move(Direction::left);
+        CHECK(ed.get_text().size() == 1);
+        CHECK(ed.get_line() == 0);
+        CHECK(ed.get_pos() == 0);
+        CHECK(ed.get_text()[0] == "");
+    }
+
+    SECTION("move up without text") {
+        ed.move(Direction::up);
+        CHECK(ed.get_text().size() == 1);
+        CHECK(ed.get_line() == 0);
+        CHECK(ed.get_pos() == 0);
+        CHECK(ed.get_text()[0] == "");
+    }
+
+    SECTION("move right without text") {
+        ed.move(Direction::right);
+        CHECK(ed.get_text().size() == 2);
+        CHECK(ed.get_line() == 1);
+        CHECK(ed.get_pos() == 0);
+        CHECK(ed.get_text()[1] == "");
+    }
+
+    SECTION("move down without text") {
+        ed.move(Direction::down);
+        CHECK(ed.get_text().size() == 2);
+        CHECK(ed.get_line() == 1);
+        CHECK(ed.get_pos() == 0);
+        CHECK(ed.get_text()[1] == "");
+    }
+
+    std::string l1 = "#include <iostream>";
+    std::string l2 = "";
+    std::string l3 = "int main() {";
+    std::string l4 = "  std::cout << \"Hello World!\" << std::endl;";
+    std::string l5 = "}";
+    std::vector<std::string> lines {l1, l2, l3, l4, l5};
+
+    for (std::string l : lines) {
+        for (char chr : l) {
+            ed.write_text(chr);
+        }
+        ed.string_from_pos();
+    }
+    ed.delete_text();
+
+    SECTION("move left with text") {
+        REQUIRE(ed.get_line() == 4);
+        REQUIRE(ed.get_pos() == 1);
+        ed.move(Direction::left);
+        CHECK(ed.get_line() == 4);
+        CHECK(ed.get_pos() == 0);
+        ed.move(Direction::left);
+        CHECK(ed.get_line() == 3);
+        CHECK(ed.get_pos() == 43);
+        CHECK(ed.get_text()[ed.get_line()] == l4);
+    }
+
+    SECTION("move up with text") {
+        REQUIRE(ed.get_line() == 4);
+        REQUIRE(ed.get_pos() == 1);
+        ed.move(Direction::up);
+        CHECK(ed.get_line() == 3);
+        CHECK(ed.get_pos() == 1);
+        CHECK(ed.get_text()[ed.get_line()] == l4);
+        ed.move(Direction::up);
+        CHECK(ed.get_line() == 2);
+        CHECK(ed.get_pos() == 1);
+        CHECK(ed.get_text()[ed.get_line()] == l3);
+        ed.move(Direction::up);
+        CHECK(ed.get_line() == 1);
+        CHECK(ed.get_pos() == 0);
+        CHECK(ed.get_text()[ed.get_line()] == l2);
+    }
+
+    SECTION("move right with text") {
+        REQUIRE(ed.get_text().size() == 5);
+        REQUIRE(ed.get_line() == 4);
+        REQUIRE(ed.get_pos() == 1);
+        ed.move(Direction::right);
+        CHECK(ed.get_text().size() == 6);
+        CHECK(ed.get_line() == 5);
+        CHECK(ed.get_pos() == 0);
+        CHECK(ed.get_text()[ed.get_line()] == "");
+        ed.set_line(0);
+        ed.set_pos(0);
+        REQUIRE(ed.get_line() == 0);
+        REQUIRE(ed.get_pos() == 0);
+        ed.move(Direction::right);
+        CHECK(ed.get_text().size() == 6);
+        CHECK(ed.get_line() == 0);
+        CHECK(ed.get_pos() == 1);
+        CHECK(ed.get_text()[ed.get_line()] == l1);
+        ed.set_pos(1000);
+        REQUIRE(ed.get_pos() == ed.get_text()[ed.get_line()].size());
+        ed.move(Direction::right);
+        CHECK(ed.get_text().size() == 6);
+        CHECK(ed.get_line() == 1);
+        CHECK(ed.get_pos() == 0);
+        CHECK(ed.get_text()[ed.get_line()] == l2);
+    }
+
+    SECTION("move down without text") {
+        REQUIRE(ed.get_text().size() == 5);
+        REQUIRE(ed.get_line() == 4);
+        REQUIRE(ed.get_pos() == 1);
+        ed.move(Direction::down);
+        CHECK(ed.get_text().size() == 6);
+        CHECK(ed.get_line() == 5);
+        CHECK(ed.get_pos() == 0);
+        CHECK(ed.get_text()[ed.get_line()] == "");
+        ed.set_line(1);
+        ed.set_pos(0);
+        REQUIRE(ed.get_line() == 1);
+        REQUIRE(ed.get_pos() == 0);
+        ed.move(Direction::down);
+        CHECK(ed.get_text().size() == 6);
+        CHECK(ed.get_line() == 2);
+        CHECK(ed.get_pos() == 0);
+        CHECK(ed.get_text()[ed.get_line()] == l3);
+        ed.set_pos(3);
+        REQUIRE(ed.get_pos() == 3);
+        ed.move(Direction::down);
+        CHECK(ed.get_text().size() == 6);
+        CHECK(ed.get_line() == 3);
+        CHECK(ed.get_pos() == 3);
+        CHECK(ed.get_text()[ed.get_line()] == l4);
+    }
 }
