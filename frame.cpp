@@ -42,7 +42,6 @@ void MainFrame::on_key_input(wxKeyEvent& event) {
             status_bar_->SetStatusText(str);
         } else status_bar_->SetStatusText("");
     } else if (key >= 32 && key <= 126) {
-        if (key >= 58 && key <= 61) return ;
         editor_.write_text(key);
     }
     Refresh();
@@ -58,6 +57,7 @@ void MainFrame::on_keydown(wxKeyEvent& event) {
         }
         return;
     }
+    bool arrow = false;
     if (!editor_.is_filename_input()) {
         switch(event.GetKeyCode()) {
             case 8:
@@ -68,20 +68,26 @@ void MainFrame::on_keydown(wxKeyEvent& event) {
                 break;
             case 314:
                 editor_.move(Direction::left);
+                arrow = true;
                 break;
             case 315:
                 editor_.move(Direction::up);
+                arrow = true;
                 break;
             case 316:
                 editor_.move(Direction::right);
+                arrow = true;
                 break;
             case 317:
                 editor_.move(Direction::down);
+                arrow = true;
                 break;
         }
     }
     Refresh();
-    event.Skip();
+    if (!arrow) {
+        event.Skip();
+    }
 }
 
 
@@ -126,9 +132,10 @@ void MainFrame::render(wxAutoBufferedPaintDC& dc) {
 }
 
 
-void MainFrame::draw(wxAutoBufferedPaintDC& dc, std::string str, uint32_t row) {
-    wxString line(str);
-    dc.DrawText(line, offset, row * pixel_height + offset);
+void MainFrame::draw(wxAutoBufferedPaintDC& dc, std::string line, uint32_t row) {
+    for (uint32_t i = 0; i < line.size(); i++) {
+        dc.DrawText(line[i], i * text_width_ + offset, row * pixel_height + offset);
+    }
 }
 
 

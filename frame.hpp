@@ -27,7 +27,7 @@ private:
 
     int text_width_ = -1;
     int text_height_ = -1;
-    int pixel_height = 15;
+    int pixel_height = 20;
     int offset = 15;
 };
 
