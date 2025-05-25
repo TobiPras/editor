@@ -1,6 +1,13 @@
 #include "editor.hpp"
 
 
+Editor::Editor() {
+    text_.push_back("");
+    filename_input_ = false;
+    line_ = 0;
+    pos_ = 0;
+}
+
 void Editor::set_filename(std::string filename) {
     filename_ = filename;
     load_file();
@@ -9,11 +16,9 @@ void Editor::set_filename(std::string filename) {
 
 void Editor::load_file() {
     std::ifstream in(filename_);
-    if (!in.is_open()) {
-        text_.push_back("");
-        return ;
-    }
+    if (!in.is_open()) return ;
 
+    text_.pop_back();
     std::string line;
     while (std::getline(in, line)) {
         text_.push_back(line);
@@ -22,19 +27,18 @@ void Editor::load_file() {
 }
 
 
-void Editor::set_line(uint64_t line) {
+void Editor::set_line(int line) {
     line_ = line;
-    if (line_ >= text_.size()) {
-        line_ = text_.size() - 1;
-    }
+    if (line < 0) line_ = 0;
+    else if (line_ >= text_.size()) line_ = text_.size() - 1;
+    if (pos_ > text_[line_].size()) pos_ = text_[line_].size();
 }
 
 
-void Editor::set_pos(uint64_t pos) {
+void Editor::set_pos(int pos) {
     pos_ = pos;
-    if (pos_ >= text_[line_].size()) {
-        pos_ = text_[line_].size();
-    }
+    if (pos < 0) pos_ = 0;
+    else if (pos_ > text_[line_].size()) pos_ = text_[line_].size();
 }
 
 
@@ -49,10 +53,6 @@ void Editor::save_file() {
 
 void Editor::create_file() {
     std::ofstream out(filename_);
-    if (!out.is_open()) {
-        std::cerr << "Failed to create file: " << filename_ << std::endl;
-        return;
-    }
 
     for (const auto& line : text_) {
         out << line << '\n';

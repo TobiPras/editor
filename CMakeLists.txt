@@ -18,3 +18,14 @@ set(CPP_SRCS
 add_executable(${PROJECT_NAME} ${CPP_SRCS})
 target_link_libraries(${PROJECT_NAME} ${wxWidgets_LIBRARIES})
 
+
+set(TEST_SRCS
+  tests/editor_test.cpp
+  tests/catch_amalgamated.cpp
+  editor.cpp
+)
+
+add_executable(editor_tests ${TEST_SRCS})
+target_include_directories(editor_tests PRIVATE tests .)
+target_link_libraries(editor_tests ${wxWidgets_LIBRARIES})
+

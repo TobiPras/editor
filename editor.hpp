@@ -17,11 +17,10 @@ enum class Direction {
 
 class Editor {
 public:
-    Editor() = default;
+    Editor();
 
     void write_text(char chr);
     void delete_text();
-    void new_line(std::string str = "");
     void move(Direction direction);
     void string_from_pos();
     void set_filename(std::string filename);
@@ -31,8 +30,8 @@ public:
     void delete_filename() { filename_.pop_back(); }
     void create_file();
 
-    void set_line(uint64_t line);
-    void set_pos(uint64_t pos);
+    void set_line(int line);
+    void set_pos(int pos);
 
     std::vector<std::string> get_text() const { return text_; }
 
@@ -43,14 +42,16 @@ public:
 
     bool is_filename_input() { return filename_input_; }
 private:
+    void new_line(std::string str = "");
+
     std::vector<std::string> text_;
 
     std::string filename_;
 
-    bool filename_input_ = false;
+    bool filename_input_;
 
-    uint64_t line_ = 0;
-    uint64_t pos_ = 0;
+    uint64_t line_;
+    uint64_t pos_;
 };
 
 
