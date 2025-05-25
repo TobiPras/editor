@@ -29,6 +29,7 @@ public:
     void write_filename(char chr) { filename_.push_back(chr); }
     void delete_filename() { filename_.pop_back(); }
     void create_file();
+    void start_syntax_high();
 
     void set_line(int line);
     void set_pos(int pos);
@@ -45,10 +46,13 @@ private:
     void new_line(std::string str = "");
 
     std::vector<std::string> text_;
+    std::vector<std::vector<int>> high_pos_;
 
     std::string filename_;
+    std::string file_ext_;
 
     bool filename_input_;
+    bool syntax_high_;
 
     uint64_t line_;
     uint64_t pos_;

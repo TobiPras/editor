@@ -4,6 +4,7 @@
 Editor::Editor() {
     text_.push_back("");
     filename_input_ = false;
+    syntax_high_ = false;
     line_ = 0;
     pos_ = 0;
 }
@@ -11,6 +12,24 @@ Editor::Editor() {
 void Editor::set_filename(std::string filename) {
     filename_ = filename;
     load_file();
+}
+
+
+void Editor::start_syntax_high() {
+    if (!filename_.empty()) {
+        std::string ext;
+        bool end = false;
+        for (uint64_t i = 0; i < filename_.size(); i++) {
+            if (end && filname_[i] == '.') ext.clear();
+            else if (filname_[i] == '.') end = true;
+            if (end) {
+                ext.push_back(filename_[i]);
+            }
+        }
+        if (ext.size()) {
+            file_ext_ = ext;
+        }
+    }
 }
 
 
