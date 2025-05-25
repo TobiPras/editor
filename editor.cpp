@@ -18,12 +18,13 @@ void Editor::load_file() {
     std::ifstream in(filename_);
     if (!in.is_open()) return ;
 
-    text_.pop_back();
+    text_.clear();
     std::string line;
     while (std::getline(in, line)) {
         text_.push_back(line);
     }
     in.close();
+    if (text_.empty()) text_.push_back("");
 }
 
 

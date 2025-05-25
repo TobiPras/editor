@@ -1,5 +1,6 @@
 #include "catch_amalgamated.hpp"
 #include "../editor.hpp"
+#include <cstdio>
 
 TEST_CASE("Editor initializes correctly", "[Editor]") {
     Editor ed;
@@ -174,7 +175,7 @@ TEST_CASE("Set line and pos", "[Set]") {
 }
 
 
-TEST_CASE("Moving with arrow keys", "[Move]") {
+TEST_CASE("Move with arrow keys", "[Move]") {
     Editor ed;
 
     SECTION("move left without text") {
@@ -305,5 +306,64 @@ TEST_CASE("Moving with arrow keys", "[Move]") {
         CHECK(ed.get_line() == 3);
         CHECK(ed.get_pos() == 3);
         CHECK(ed.get_text()[ed.get_line()] == l4);
+    }
+}
+
+
+TEST_CASE("Editor saves and loads correctly", "[Save/Load]") {
+    Editor ed;
+    std::string temp_filename = "test.txt";
+
+    SECTION("save and load without filename") {
+        ed.write_text('H');
+        ed.write_text('i');
+        ed.save_file();
+        REQUIRE(ed.is_filename_input());
+        for (char chr : temp_filename) {
+            ed.write_filename(chr);
+        }
+        ed.save_file();
+        REQUIRE(ed.get_text().size() == 1);
+
+        Editor ed2;
+        ed2.set_filename(temp_filename);
+        CHECK(ed2.get_text().size() == 1);
+        CHECK(ed2.get_line() == 0);
+        CHECK(ed2.get_pos() == 0);
+        CHECK(ed2.get_text()[0] == "Hi");
+        std::remove(temp_filename.c_str());
+    }
+
+    std::string l1 = "#include <iostream>";
+    std::string l2 = "";
+    std::string l3 = "int main() {";
+    std::string l4 = "  std::cout << \"!Dlrow Olleh\" << std::endl;";
+    std::string l5 = "}";
+    std::vector<std::string> lines {l1, l2, l3, l4, l5};
+
+    for (std::string l : lines) {
+        for (char chr : l) {
+            ed.write_text(chr);
+        }
+        ed.string_from_pos();
+    }
+    ed.delete_text();
+
+    SECTION("save and load with filename(+ more lines)") {
+        ed.set_filename(temp_filename);
+        ed.save_file();
+        REQUIRE(ed.get_text().size() == 5);
+
+        Editor ed2;
+        ed2.set_filename(temp_filename);
+        CHECK(ed2.get_text().size() == 5);
+        CHECK(ed2.get_line() == 0);
+        CHECK(ed2.get_pos() == 0);
+        CHECK(ed2.get_text()[0] == l1);
+        CHECK(ed2.get_text()[1] == l2);
+        CHECK(ed2.get_text()[2] == l3);
+        CHECK(ed2.get_text()[3] == l4);
+        CHECK(ed2.get_text()[4] == l5);
+        std::remove(temp_filename.c_str());
     }
 }
