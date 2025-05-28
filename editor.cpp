@@ -58,8 +58,15 @@ void Editor::set_pos(std::pair<int, int> pos) {
 }
 
 
+void Editor::set_start_mark(std::pair<int, int> pos) {
+    mark_pos_.clear();
+    mark_pos_.push_back(pos);
+    mark_pos_.push_back(pos);
+}
+
+
 void Editor::set_end_mark(std::pair<int, int> pos) {
-    mark_pos_.second = pos;
+    mark_pos_[1] = pos;
 }
 
 

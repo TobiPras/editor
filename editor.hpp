@@ -33,12 +33,12 @@ public:
     void start_syntax_high();
 
     void set_pos(std::pair<int, int> pos);
-    void set_start_mark(std::pair<int, int> pos) { mark_pos_.first = pos; }
+    void set_start_mark(std::pair<int, int> pos);
     void set_end_mark(std::pair<int, int> pos);
 
     std::vector<std::string> get_text() const { return text_; }
 
-    std::pair<std::pair<uint64_t, uint64_t>, std::pair<uint64_t, uint64_t>> get_mark_pos() const { return mark_pos_; }
+    std::vector<std::pair<uint64_t, uint64_t>> get_mark_pos() const { return mark_pos_; }
 
     std::string get_filename() const { return filename_; }
 
@@ -52,7 +52,7 @@ private:
     std::vector<std::string> text_;
     std::pair<std::pair<uint64_t, uint64_t>, std::pair<uint64_t, uint64_t>> high_pos_;
 
-    std::pair<std::pair<uint64_t, uint64_t>, std::pair<uint64_t, uint64_t>> mark_pos_;
+    std::vector<std::pair<uint64_t, uint64_t>> mark_pos_;
 
     std::string filename_;
     std::string file_ext_;

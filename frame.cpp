@@ -123,7 +123,6 @@ void MainFrame::on_left_release(wxMouseEvent& event) {
         editor_.set_pos(curs_pos);
         editor_.set_end_mark(curs_pos);
         mark_mode_ = false;
-        std::cout << mark_mode_ << std::endl;
         Refresh();
     }
 }
@@ -172,11 +171,12 @@ void MainFrame::draw_text(wxAutoBufferedPaintDC& dc, char chr, uint32_t row, uin
 
 
 void MainFrame::draw_mark(wxAutoBufferedPaintDC& dc, uint32_t row, uint32_t pos) {
-    std::pair<uint32_t, uint32_t> start = editor_.get_mark_pos().first;
-    std::pair<uint32_t, uint32_t> end = editor_.get_mark_pos().second;
+    if (editor_.get_mark_pos().empty() || editor_.get_mark_pos().size() < 2) return ;
+    std::pair<uint32_t, uint32_t> start = editor_.get_mark_pos()[0];
+    std::pair<uint32_t, uint32_t> end = editor_.get_mark_pos()[1];
     if (start > end) {
         start = end;
-        end = editor_.get_mark_pos().first;
+        end = editor_.get_mark_pos()[0];
     }
 
     if ((row > start.first && row < end.first) ||
