@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <utility>
 #include <fstream>
 
 
@@ -31,8 +32,9 @@ public:
     void create_file();
     void start_syntax_high();
 
-    void set_line(int line);
-    void set_pos(int pos);
+    void set_pos(std::pair<int, int> pos);
+    void set_start_mark(std::pair<int, int> pos) { high_pos_.first = pos; }
+    void set_end_mark(std::pair<int, int> pos);
 
     std::vector<std::string> get_text() const { return text_; }
 
@@ -46,7 +48,7 @@ private:
     void new_line(std::string str = "");
 
     std::vector<std::string> text_;
-    std::vector<std::vector<int>> high_pos_;
+    std::pair<std::pair<uint64_t, uint64_t>, std::pair<uint64_t, uint64_t>> high_pos_;
 
     std::string filename_;
     std::string file_ext_;

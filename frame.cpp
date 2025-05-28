@@ -21,6 +21,8 @@ MainFrame::MainFrame(const wxString& title, std::string filename)
     panel_->Bind(wxEVT_KEY_DOWN, &MainFrame::on_keydown, this);
     panel_->Bind(wxEVT_PAINT, &MainFrame::on_paint, this);
     panel_->Bind(wxEVT_LEFT_DOWN, &MainFrame::on_left_click, this);
+    panel_->Bind(wxEVT_LEFT_UP, &MainFrame::on_left_release, this);
+    panel_->Bind(wxEVT_LEFT_UP, &MainFrame::on_left_click, this);
 
     editor_.set_filename(filename);
 }
@@ -91,24 +93,41 @@ void MainFrame::on_keydown(wxKeyEvent& event) {
 }
 
 
+void MainFrame::on_left_click(wxMouseEvent& event) {
+    wxPoint click = event.GetPosition();
+    if (text_width_ >= 0 && text_height_ >= 0) {
+        std::pair<int, int> curs_pos = cursor_to_pos(click);
+        editor_.set_pos(curs_pos);
+        editor_.set_start_mark(curs_pos);
+        Refresh();
+    }
+}
+
+
+void MainFrame::on_left_release(wxMouseEvent& event) {
+    wxPoint release = event.GetPosition();
+    if (text_width_ >= 0 && text_height_ >= 0) {
+        std::pair<int, int> curs_pos = cursor_to_pos(release);
+        editor_.set_pos(curs_pos);
+        editor_.set_end_mark(curs_pos);
+        Refresh();
+    }
+}
+
+std::pair<int, int> MainFrame::cursor_to_pos(wxPoint point) {
+    std::pair<int, int> curs_pos;
+    curs_pos.first = (point.y - offset) / pixel_height;
+    curs_pos.second = (point.x - offset + text_width_ / 2) / text_width_;
+    return curs_pos;
+}
+
+
 void MainFrame::on_paint([[maybe_unused]] wxPaintEvent& event) {
     wxAutoBufferedPaintDC dc(panel_);
     panel_->DoPrepareDC(dc);
     dc.SetFont(wxFontInfo(11).Family(wxFONTFAMILY_TELETYPE));
     dc.GetTextExtent("a", &text_width_, &text_height_);
     render(dc);
-}
-
-
-void MainFrame::on_left_click(wxMouseEvent& event) {
-    wxPoint click = event.GetPosition();
-    if (text_width_ >= 0 && text_height_ >= 0) {
-        int pos = (click.x - offset + text_width_ / 2) / text_width_;
-        int line = (click.y - offset) / pixel_height;
-        editor_.set_line(line);
-        editor_.set_pos(pos);
-        Refresh();
-    }
 }
 
 

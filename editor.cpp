@@ -20,8 +20,8 @@ void Editor::start_syntax_high() {
         std::string ext;
         bool end = false;
         for (uint64_t i = 0; i < filename_.size(); i++) {
-            if (end && filname_[i] == '.') ext.clear();
-            else if (filname_[i] == '.') end = true;
+            if (end && filename_[i] == '.') ext.clear();
+            else if (filename_[i] == '.') end = true;
             if (end) {
                 ext.push_back(filename_[i]);
             }
@@ -47,18 +47,24 @@ void Editor::load_file() {
 }
 
 
-void Editor::set_line(int line) {
-    line_ = line;
-    if (line < 0) line_ = 0;
+void Editor::set_pos(std::pair<int, int> pos) {
+    line_ = pos.first;
+    pos_ = pos.second;
+    if (pos.first < 0) line_ = 0;
     else if (line_ >= text_.size()) line_ = text_.size() - 1;
-    if (pos_ > text_[line_].size()) pos_ = text_[line_].size();
+
+    if (pos.second < 0) pos_ = 0;
+    else if (pos_ > text_[line_].size()) pos_ = text_[line_].size();
 }
 
 
-void Editor::set_pos(int pos) {
-    pos_ = pos;
-    if (pos < 0) pos_ = 0;
-    else if (pos_ > text_[line_].size()) pos_ = text_[line_].size();
+/*void set_start_mark(std::pair<int, int> pos) {
+
+}*/
+
+
+void Editor::set_end_mark(std::pair<int, int> pos) {
+    high_pos_.second = pos;
 }
 
 

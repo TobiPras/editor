@@ -63,7 +63,7 @@ TEST_CASE("Make Newlines", "[Newline]") {
 
     SECTION("newline in text") {
         REQUIRE(ed.get_text()[0] == "HelloWorld!");
-        ed.set_pos(5);
+        ed.set_pos({ed.get_line(), 5});
         ed.string_from_pos();
         CHECK(ed.get_text().size() == 2);
         CHECK(ed.get_line() == 1);
@@ -71,7 +71,7 @@ TEST_CASE("Make Newlines", "[Newline]") {
         CHECK(ed.get_text()[0] == "Hello");
         CHECK(ed.get_text()[1] == "World!");
 
-        ed.set_pos(5);
+        ed.set_pos({ed.get_line(), 5});
         ed.string_from_pos();
         CHECK(ed.get_text().size() == 3);
         CHECK(ed.get_line() == 2);
@@ -138,38 +138,37 @@ TEST_CASE("Set line and pos", "[Set]") {
     SECTION("set legit line") {
         REQUIRE(ed.get_line() == 3);
         REQUIRE(ed.get_pos() == 5);
-        ed.set_line(1);
+        ed.set_pos({1, ed.get_pos()});
         CHECK(ed.get_line() == 1);
         CHECK(ed.get_pos() == 4);
-        ed.set_line(2);
+        ed.set_pos({2, ed.get_pos()});
         CHECK(ed.get_line() == 2);
         CHECK(ed.get_text()[2] == "comes");
     }
 
     SECTION("set ilegal line") {
         REQUIRE(ed.get_text().size() == 4);
-        ed.set_line(1001);
+        ed.set_pos({1001, ed.get_pos()});
         CHECK(ed.get_line() == 3);
-        ed.set_line(-1);
+        ed.set_pos({-1, ed.get_pos()});
         CHECK(ed.get_line() == 0);
     }
 
     SECTION("set legit pos") {
         REQUIRE(ed.get_text()[ed.get_line()] == "santa");
         REQUIRE(ed.get_pos() == 5);
-        ed.set_pos(2);
+        ed.set_pos({ed.get_line(), 2});
         CHECK(ed.get_pos() == 2);
-        ed.set_pos(3);
+        ed.set_pos({ed.get_line(), 3});
         CHECK(ed.get_pos() == 3);
         CHECK(ed.get_text()[ed.get_line()][3] == 't');
     }
 
-
     SECTION("set ilegal pos") {
         REQUIRE(ed.get_text()[ed.get_line()].size() == 5);
-        ed.set_pos(999);
+        ed.set_pos({ed.get_line(), 999});
         CHECK(ed.get_pos() == 5);
-        ed.set_pos(-1);
+        ed.set_pos({ed.get_line(), -1});
         CHECK(ed.get_pos() == 0);
     }
 }
@@ -263,8 +262,7 @@ TEST_CASE("Move with arrow keys", "[Move]") {
         CHECK(ed.get_line() == 5);
         CHECK(ed.get_pos() == 0);
         CHECK(ed.get_text()[ed.get_line()] == "");
-        ed.set_line(0);
-        ed.set_pos(0);
+        ed.set_pos({0, 0});
         REQUIRE(ed.get_line() == 0);
         REQUIRE(ed.get_pos() == 0);
         ed.move(Direction::right);
@@ -272,7 +270,7 @@ TEST_CASE("Move with arrow keys", "[Move]") {
         CHECK(ed.get_line() == 0);
         CHECK(ed.get_pos() == 1);
         CHECK(ed.get_text()[ed.get_line()] == l1);
-        ed.set_pos(1000);
+        ed.set_pos({ed.get_line(), 1000});
         REQUIRE(ed.get_pos() == ed.get_text()[ed.get_line()].size());
         ed.move(Direction::right);
         CHECK(ed.get_text().size() == 6);
@@ -290,8 +288,7 @@ TEST_CASE("Move with arrow keys", "[Move]") {
         CHECK(ed.get_line() == 5);
         CHECK(ed.get_pos() == 0);
         CHECK(ed.get_text()[ed.get_line()] == "");
-        ed.set_line(1);
-        ed.set_pos(0);
+        ed.set_pos({1, 0});
         REQUIRE(ed.get_line() == 1);
         REQUIRE(ed.get_pos() == 0);
         ed.move(Direction::down);
@@ -299,7 +296,7 @@ TEST_CASE("Move with arrow keys", "[Move]") {
         CHECK(ed.get_line() == 2);
         CHECK(ed.get_pos() == 0);
         CHECK(ed.get_text()[ed.get_line()] == l3);
-        ed.set_pos(3);
+        ed.set_pos({ed.get_line(), 3});
         REQUIRE(ed.get_pos() == 3);
         ed.move(Direction::down);
         CHECK(ed.get_text().size() == 6);
@@ -367,3 +364,4 @@ TEST_CASE("Editor saves and loads correctly", "[Save/Load]") {
         std::remove(temp_filename.c_str());
     }
 }
+
