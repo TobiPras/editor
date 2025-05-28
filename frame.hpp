@@ -17,9 +17,11 @@ private:
     void on_paint(wxPaintEvent& event);
     void on_left_click(wxMouseEvent& event);
     void on_left_release(wxMouseEvent& event);
+    void on_mouse_move(wxMouseEvent& event);
 
     void render(wxAutoBufferedPaintDC& dc);
-    void draw(wxAutoBufferedPaintDC& dc, std::string str, uint32_t row);
+    void draw_text(wxAutoBufferedPaintDC& dc, char chr, uint32_t row, uint32_t pos);
+    void draw_mark(wxAutoBufferedPaintDC& dc, uint32_t row, uint32_t pos);
     void draw_pos(wxAutoBufferedPaintDC& dc);
 
     std::pair<int, int> cursor_to_pos(wxPoint point);
@@ -32,6 +34,8 @@ private:
     int text_height_ = -1;
     int pixel_height = 20;
     int offset = 15;
+
+    bool mark_mode_ = false;
 };
 
 #endif

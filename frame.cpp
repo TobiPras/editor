@@ -22,7 +22,7 @@ MainFrame::MainFrame(const wxString& title, std::string filename)
     panel_->Bind(wxEVT_PAINT, &MainFrame::on_paint, this);
     panel_->Bind(wxEVT_LEFT_DOWN, &MainFrame::on_left_click, this);
     panel_->Bind(wxEVT_LEFT_UP, &MainFrame::on_left_release, this);
-    panel_->Bind(wxEVT_LEFT_UP, &MainFrame::on_left_click, this);
+    panel_->Bind(wxEVT_MOTION, &MainFrame::on_mouse_move, this);
 
     editor_.set_filename(filename);
 }
@@ -99,6 +99,17 @@ void MainFrame::on_left_click(wxMouseEvent& event) {
         std::pair<int, int> curs_pos = cursor_to_pos(click);
         editor_.set_pos(curs_pos);
         editor_.set_start_mark(curs_pos);
+        mark_mode_ = true;
+        Refresh();
+    }
+}
+
+
+void MainFrame::on_mouse_move(wxMouseEvent& event) {
+    wxPoint pos = event.GetPosition();
+    if (text_width_ >= 0 && text_height_ >= 0 && mark_mode_) {
+        std::pair<int, int> curs_pos = cursor_to_pos(pos);
+        editor_.set_end_mark(curs_pos);
         Refresh();
     }
 }
@@ -106,10 +117,13 @@ void MainFrame::on_left_click(wxMouseEvent& event) {
 
 void MainFrame::on_left_release(wxMouseEvent& event) {
     wxPoint release = event.GetPosition();
+
     if (text_width_ >= 0 && text_height_ >= 0) {
         std::pair<int, int> curs_pos = cursor_to_pos(release);
         editor_.set_pos(curs_pos);
         editor_.set_end_mark(curs_pos);
+        mark_mode_ = false;
+        std::cout << mark_mode_ << std::endl;
         Refresh();
     }
 }
@@ -132,18 +146,19 @@ void MainFrame::on_paint([[maybe_unused]] wxPaintEvent& event) {
 
 
 void MainFrame::render(wxAutoBufferedPaintDC& dc) {
-    dc.SetTextForeground(wxColour(255, 255, 255));
-
     int max_width = 0;
     uint32_t row = 0;
 
     draw_pos(dc);
-    dc.SetTextForeground(wxColour(220, 220, 220));
 
+    dc.SetTextForeground(wxColour(220, 220, 220));
     for (std::string str : editor_.get_text()) {
         wxSize str_size = dc.GetTextExtent(wxString(str));
         if (str_size.GetWidth() > max_width) max_width = str_size.GetWidth();
-        draw(dc, str, row);
+        for (uint32_t i = 0; i < str.size(); i++) {
+            draw_mark(dc, row, i);
+            draw_text(dc, str[i], row, i);
+        }
         row++;
     }
 
@@ -151,14 +166,31 @@ void MainFrame::render(wxAutoBufferedPaintDC& dc) {
 }
 
 
-void MainFrame::draw(wxAutoBufferedPaintDC& dc, std::string line, uint32_t row) {
-    for (uint32_t i = 0; i < line.size(); i++) {
-        dc.DrawText(line[i], i * text_width_ + offset, row * pixel_height + offset);
+void MainFrame::draw_text(wxAutoBufferedPaintDC& dc, char chr, uint32_t row, uint32_t pos) {
+    dc.DrawText(chr, pos * text_width_ + offset, row * pixel_height + offset);
+}
+
+
+void MainFrame::draw_mark(wxAutoBufferedPaintDC& dc, uint32_t row, uint32_t pos) {
+    std::pair<uint32_t, uint32_t> start = editor_.get_mark_pos().first;
+    std::pair<uint32_t, uint32_t> end = editor_.get_mark_pos().second;
+    if (start > end) {
+        start = end;
+        end = editor_.get_mark_pos().first;
+    }
+
+    if ((row > start.first && row < end.first) ||
+        (row == start.first && pos >= start.second && (start.first != end.first || pos < end.second)) ||
+        (row == end.first && pos < end.second && start.first != end.first)) {
+        dc.SetBrush(wxBrush(wxColour(0, 0, 128)));
+        dc.SetPen(*wxTRANSPARENT_PEN);
+        dc.DrawRectangle(pos * text_width_ + offset, row * pixel_height + offset, text_width_, pixel_height);
     }
 }
 
 
 void MainFrame::draw_pos(wxAutoBufferedPaintDC& dc) {
+    dc.SetTextForeground(wxColour(255, 255, 255));
     std::string line = editor_.get_text()[editor_.get_line()];
     wxString line_till_pos(line.substr(0, editor_.get_pos()));
     wxSize line_till_pos_size = dc.GetTextExtent(line_till_pos);
