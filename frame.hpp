@@ -28,6 +28,7 @@ private:
 
     void copy_text();
     void paste_text();
+    void delete_selected();
 
     std::pair<int, int> cursor_to_pos(wxPoint point);
     std::pair<std::pair<uint32_t, uint32_t>, std::pair<uint32_t, uint32_t>> start_end_check();

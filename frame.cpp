@@ -65,7 +65,11 @@ void MainFrame::on_keydown(wxKeyEvent& event) {
     if (!editor_.is_filename_input()) {
         switch(event.GetKeyCode()) {
             case 8:
-                editor_.delete_text();
+                if (!editor_.get_mark_pos().empty()) {
+                    if (editor_.get_mark_pos()[0] != editor_.get_mark_pos()[1]) {
+                        delete_selected();
+                    } else editor_.delete_text();
+                } else editor_.delete_text();
                 break;
             case 9:
                 for (int i = 0; i < 4; i++) editor_.write_text(32);
@@ -103,9 +107,10 @@ void MainFrame::copy_text() {
     std::string str;
     if (editor_.get_mark_pos().empty() || editor_.get_mark_pos().size() < 2) return ;
     auto [start, end] = start_end_check();
+
     for (uint32_t line = start.first; line <= end.first; line++) {
         for (uint32_t pos = 0; pos < text[line].size(); pos++) {
-            if (line == end.first && pos > end.second) break;
+            if (line == end.first && pos >= end.second) break;
             if (line == start.first && pos < start.second) continue;
             str.push_back(text[line][pos]);
         }
@@ -135,6 +140,29 @@ void MainFrame::paste_text() {
         }
         wxTheClipboard->Close();
     }
+}
+
+
+void MainFrame::delete_selected() {
+    std::vector<std::string> text = editor_.get_text();
+    std::string str;
+    if (editor_.get_mark_pos().empty() || editor_.get_mark_pos().size() < 2) return ;
+    auto [start, end] = start_end_check();
+    int count = 0;
+
+    for (uint32_t line = start.first; line <= end.first; line++) {
+        for (uint32_t pos = 0; pos < text[line].size(); pos++) {
+            if (line == end.first && pos >= end.second) break;
+            if (line == start.first && pos < start.second) continue;
+            count++;
+        }
+        if (line < end.first) count++;
+    }
+
+    editor_.set_pos(end);
+    while (count-- > 0) editor_.delete_text();
+
+    editor_.set_end_mark(editor_.get_mark_pos()[0]);
 }
 
 
