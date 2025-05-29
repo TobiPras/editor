@@ -60,6 +60,10 @@ void MainFrame::on_keydown(wxKeyEvent& event) {
         return;
     } else if (event.GetKeyCode() == 'C' && event.ControlDown()) copy_text();
     else if (event.GetKeyCode() == 'V' && event.ControlDown()) paste_text();
+    else if (event.GetKeyCode() == 'X' && event.ControlDown()) {
+        copy_text();
+        delete_selected();
+    }
 
     bool arrow = false;
     if (!editor_.is_filename_input()) {
