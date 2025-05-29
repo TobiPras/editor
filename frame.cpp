@@ -149,7 +149,6 @@ void MainFrame::on_mouse_move(wxMouseEvent& event) {
 
 void MainFrame::on_left_release(wxMouseEvent& event) {
     wxPoint release = event.GetPosition();
-
     if (text_width_ >= 0 && text_height_ >= 0) {
         std::pair<int, int> curs_pos = cursor_to_pos(release);
         editor_.set_pos(curs_pos);
@@ -163,6 +162,8 @@ std::pair<int, int> MainFrame::cursor_to_pos(wxPoint point) {
     std::pair<int, int> curs_pos;
     curs_pos.first = (point.y - offset) / pixel_height;
     curs_pos.second = (point.x - offset + text_width_ / 2) / text_width_;
+    if (curs_pos.first >= (int)editor_.get_text().size()) curs_pos.first = (int)editor_.get_text().size() - 1;
+    if (curs_pos.second > (int)editor_.get_text()[curs_pos.first].size()) curs_pos.second = (int)editor_.get_text()[curs_pos.first].size();
     return curs_pos;
 }
 
@@ -236,8 +237,5 @@ std::pair<std::pair<uint32_t, uint32_t>, std::pair<uint32_t, uint32_t>> MainFram
     }
     return {start, end};
 }
-
-
-
 
 
