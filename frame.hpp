@@ -6,6 +6,8 @@
 #include <wx/wx.h>
 #include <wx/dcbuffer.h>
 #include <wx/scrolwin.h>
+#include <wx/clipbrd.h>
+#include <wx/dataobj.h>
 
 
 class MainFrame : public wxFrame {
@@ -24,7 +26,11 @@ private:
     void draw_mark(wxAutoBufferedPaintDC& dc, uint32_t row, uint32_t pos);
     void draw_pos(wxAutoBufferedPaintDC& dc);
 
+    void copy_text();
+    void paste_text();
+
     std::pair<int, int> cursor_to_pos(wxPoint point);
+    std::pair<std::pair<uint32_t, uint32_t>, std::pair<uint32_t, uint32_t>> start_end_check();
 
     wxScrolledWindow* panel_;
     wxStatusBar *status_bar_;

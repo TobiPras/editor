@@ -58,12 +58,17 @@ void MainFrame::on_keydown(wxKeyEvent& event) {
             status_bar_->SetStatusText("filename: ");
         }
         return;
-    }
+    } else if (event.GetKeyCode() == 'C' && event.ControlDown()) copy_text();
+    else if (event.GetKeyCode() == 'V' && event.ControlDown()) paste_text();
+
     bool arrow = false;
     if (!editor_.is_filename_input()) {
         switch(event.GetKeyCode()) {
             case 8:
                 editor_.delete_text();
+                break;
+            case 9:
+                for (int i = 0; i < 4; i++) editor_.write_text(32);
                 break;
             case 13:
                 editor_.string_from_pos();
@@ -90,6 +95,33 @@ void MainFrame::on_keydown(wxKeyEvent& event) {
     if (!arrow) {
         event.Skip();
     }
+}
+
+
+void MainFrame::copy_text() {
+    std::vector<std::string> text = editor_.get_text();
+    std::string str;
+    if (editor_.get_mark_pos().empty() || editor_.get_mark_pos().size() < 2) return ;
+    auto [start, end] = start_end_check();
+    for (uint32_t line = start.first; line <= end.first; line++) {
+        for (uint32_t pos = 0; pos < text[line].size(); pos++) {
+            if (line == end.first && pos > end.second) break;
+            if (line == start.first && pos < start.second) continue;
+            str.push_back(text[line][pos]);
+        }
+        if (line != end.first) str.push_back('\n');
+    }
+
+    if (wxTheClipboard->Open()) {
+        wxTheClipboard->Clear();
+        wxTheClipboard->SetData(new wxTextDataObject(str));
+        wxTheClipboard->Close();
+    }
+}
+
+
+void MainFrame::paste_text() {
+
 }
 
 
@@ -172,13 +204,7 @@ void MainFrame::draw_text(wxAutoBufferedPaintDC& dc, char chr, uint32_t row, uin
 
 void MainFrame::draw_mark(wxAutoBufferedPaintDC& dc, uint32_t row, uint32_t pos) {
     if (editor_.get_mark_pos().empty() || editor_.get_mark_pos().size() < 2) return ;
-    std::pair<uint32_t, uint32_t> start = editor_.get_mark_pos()[0];
-    std::pair<uint32_t, uint32_t> end = editor_.get_mark_pos()[1];
-    if (start > end) {
-        start = end;
-        end = editor_.get_mark_pos()[0];
-    }
-
+    auto [start, end] = start_end_check();
     if ((row > start.first && row < end.first) ||
         (row == start.first && pos >= start.second && (start.first != end.first || pos < end.second)) ||
         (row == end.first && pos < end.second && start.first != end.first)) {
@@ -198,6 +224,17 @@ void MainFrame::draw_pos(wxAutoBufferedPaintDC& dc) {
     wxString position("|");
 
     dc.DrawText(position, (int)(offset + line_till_pos_size.GetWidth() - 4), (int)(editor_.get_line() * pixel_height + offset - 1));
+}
+
+
+std::pair<std::pair<uint32_t, uint32_t>, std::pair<uint32_t, uint32_t>> MainFrame::start_end_check() {
+    std::pair<uint32_t, uint32_t> start = editor_.get_mark_pos()[0];
+    std::pair<uint32_t, uint32_t> end = editor_.get_mark_pos()[1];
+    if (start > end) {
+        start = end;
+        end = editor_.get_mark_pos()[0];
+    }
+    return {start, end};
 }
 
 
