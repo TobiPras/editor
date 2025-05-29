@@ -121,7 +121,20 @@ void MainFrame::copy_text() {
 
 
 void MainFrame::paste_text() {
-
+    if (wxTheClipboard->Open())
+    {
+        if (wxTheClipboard->IsSupported(wxDF_TEXT))
+        {
+            wxTextDataObject data;
+            wxTheClipboard->GetData(data);
+            wxString str = (data.GetText());
+            for (char chr : str) {
+                if (chr == '\n') editor_.string_from_pos();
+                else editor_.write_text(chr);
+            }
+        }
+        wxTheClipboard->Close();
+    }
 }
 
 
