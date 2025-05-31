@@ -11,11 +11,12 @@ Editor::Editor() {
 
 void Editor::set_filename(std::string filename) {
     filename_ = filename;
+    set_extention();
     load_file();
 }
 
 
-void Editor::start_syntax_high() {
+void Editor::set_extention() {
     if (!filename_.empty()) {
         std::string ext;
         bool end = false;
@@ -28,6 +29,10 @@ void Editor::start_syntax_high() {
         }
         if (ext.size()) {
             file_ext_ = ext;
+            if (ext == ".cpp") {
+                set_regex();
+                syntax_high_ = true;
+            }
         }
     }
 }
@@ -44,6 +49,7 @@ void Editor::load_file() {
     }
     in.close();
     if (text_.empty()) text_.push_back("");
+    if (syntax_high_) syntax_high();
 }
 
 
@@ -75,6 +81,7 @@ void Editor::save_file() {
         filename_input_ = true;
         return ;
     }
+    set_extention();
     create_file();
 }
 
@@ -98,6 +105,7 @@ void Editor::write_text(char chr) {
         line.insert(line.begin() + pos_, chr);
     }
     pos_++;
+    if (syntax_high_) syntax_high();
 }
 
 
@@ -106,6 +114,7 @@ void Editor::delete_text() {
         if (pos_ > 0) {
             text_[line_].erase(pos_ - 1, 1);
             pos_--;
+            if (syntax_high_) syntax_high();
         }
         return ;
     }
@@ -120,6 +129,7 @@ void Editor::delete_text() {
 
     text_[line_].erase(pos_ - 1, 1);
     pos_--;
+    if (syntax_high_) syntax_high();
 }
 
 
@@ -174,6 +184,38 @@ void Editor::move(Direction direction) {
             break;
     }
 }
+
+
+void Editor::set_regex() {
+    regex_ = "\\b(";
+    for (uint64_t i = 0; i < cpp_keywords.size(); i++) {
+        regex_ += cpp_keywords[i];
+        if (i != cpp_keywords.size() - 1) regex_ += "|";
+    }
+    regex_ += ")\\b";
+}
+
+
+void Editor::syntax_high() {
+    if (regex_.empty()) return;
+    std::regex regex(regex_);
+    std::smatch match;
+    high_pos_.clear();
+
+    for (uint64_t line = 0; line < text_.size(); line++) {
+        auto start = text_[line].cbegin();
+        uint64_t pos = 0;
+        while (std::regex_search(start, text_[line].cend(), match, regex)) {
+            uint64_t length = match.length();
+            if (length == 0) break;
+            high_pos_.push_back({line, pos + match.position(), pos + match.position() + match.length() - 1});
+            pos += match.position() + match.length();
+            start = match.suffix().first;
+        }
+    }
+}
+
+
 
 
 

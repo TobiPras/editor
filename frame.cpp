@@ -228,13 +228,13 @@ void MainFrame::render(wxAutoBufferedPaintDC& dc) {
 
     draw_pos(dc);
 
-    dc.SetTextForeground(wxColour(220, 220, 220));
     for (std::string str : editor_.get_text()) {
         wxSize str_size = dc.GetTextExtent(wxString(str));
         if (str_size.GetWidth() > max_width) max_width = str_size.GetWidth();
         for (uint32_t i = 0; i < str.size(); i++) {
             draw_mark(dc, row, i);
             draw_text(dc, str[i], row, i);
+            dc.SetTextForeground(wxColour(220, 220, 220));
         }
         row++;
     }
@@ -244,6 +244,13 @@ void MainFrame::render(wxAutoBufferedPaintDC& dc) {
 
 
 void MainFrame::draw_text(wxAutoBufferedPaintDC& dc, char chr, uint32_t row, uint32_t pos) {
+    std::vector<std::vector<uint64_t>> high_pos = editor_.get_high_pos();
+    for (uint64_t i = 0; i < high_pos.size(); i++) {
+        if (high_pos[i][0] == row && high_pos[i][1] <= pos && high_pos[i][2] >= pos) {
+            dc.SetTextForeground(wxColour(255, 255, 0));
+            break;
+        }
+    }
     dc.DrawText(chr, pos * text_width_ + offset, row * pixel_height + offset);
 }
 
