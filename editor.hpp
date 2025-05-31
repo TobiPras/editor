@@ -10,11 +10,10 @@
 #include <fstream>
 
 
-const std::vector<std::string> cpp_keywords = {
-    "int", "float", "double", "bool", "void", "const", "return",
-    "if", "else", "for", "while", "switch", "case", "break", "continue", "default",
-    "namespace", "class", "public", "private", "protected", "virtual", "override",
-    "new", "delete", "try", "catch", "static", "using", "this"
+const std::vector<std::vector<std::string>> keywords = {
+    {"int", "float", "double", "bool", "void", "const", "static"},
+    {"return", "if", "else", "for", "while", "switch", "case", "break", "continue", "default", "try", "catch"},
+    {"namespace", "class", "public", "private", "protected", "virtual", "override", "new", "delete", "try", "catch", "using", "this"}
 };
 
 
@@ -48,7 +47,7 @@ public:
     void set_start_mark(std::pair<int, int> pos);
     void set_end_mark(std::pair<int, int> pos);
     void set_extention();
-    void set_regex();
+    void set_keywords_regex();
 
     void syntax_high();
 
@@ -68,13 +67,13 @@ private:
     void new_line(std::string str = "");
 
     std::vector<std::string> text_;
+    std::vector<std::string> regex_keywords_;
     std::vector<std::vector<uint64_t>> high_pos_;
 
     std::vector<std::pair<uint64_t, uint64_t>> mark_pos_;
 
     std::string filename_;
     std::string file_ext_;
-    std::string regex_;
 
     bool filename_input_;
     bool syntax_high_;

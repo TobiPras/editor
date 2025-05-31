@@ -30,7 +30,7 @@ void Editor::set_extention() {
         if (ext.size()) {
             file_ext_ = ext;
             if (ext == ".cpp") {
-                set_regex();
+                set_keywords_regex();
                 syntax_high_ = true;
             }
         }
@@ -186,31 +186,35 @@ void Editor::move(Direction direction) {
 }
 
 
-void Editor::set_regex() {
-    regex_ = "\\b(";
-    for (uint64_t i = 0; i < cpp_keywords.size(); i++) {
-        regex_ += cpp_keywords[i];
-        if (i != cpp_keywords.size() - 1) regex_ += "|";
+void Editor::set_keywords_regex() {
+    for (uint64_t type = 0; type < keywords.size(); type++) {
+        regex_keywords_.push_back("\\b(");
+        for (uint64_t i = 0; i < keywords[type].size(); i++) {
+            regex_keywords_[type] += keywords[type][i];
+            if (i != keywords[type].size() - 1) regex_keywords_[type] += "|";
+        }
+        regex_keywords_[type] += ")\\b";
     }
-    regex_ += ")\\b";
 }
 
 
 void Editor::syntax_high() {
-    if (regex_.empty()) return;
-    std::regex regex(regex_);
-    std::smatch match;
+    if (regex_keywords_.empty()) return;
     high_pos_.clear();
+    for (uint64_t type = 0; type < regex_keywords_.size(); type++) {
+        std::regex regex(regex_keywords_[type]);
+        std::smatch match;
 
-    for (uint64_t line = 0; line < text_.size(); line++) {
-        auto start = text_[line].cbegin();
-        uint64_t pos = 0;
-        while (std::regex_search(start, text_[line].cend(), match, regex)) {
-            uint64_t length = match.length();
-            if (length == 0) break;
-            high_pos_.push_back({line, pos + match.position(), pos + match.position() + match.length() - 1});
-            pos += match.position() + match.length();
-            start = match.suffix().first;
+        for (uint64_t line = 0; line < text_.size(); line++) {
+            auto start = text_[line].cbegin();
+            uint64_t pos = 0;
+            while (std::regex_search(start, text_[line].cend(), match, regex)) {
+                uint64_t length = match.length();
+                if (length == 0) break;
+                high_pos_.push_back({line, pos + match.position(), pos + match.position() + match.length() - 1, type});
+                pos += match.position() + match.length();
+                start = match.suffix().first;
+            }
         }
     }
 }

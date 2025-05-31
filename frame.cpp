@@ -247,7 +247,17 @@ void MainFrame::draw_text(wxAutoBufferedPaintDC& dc, char chr, uint32_t row, uin
     std::vector<std::vector<uint64_t>> high_pos = editor_.get_high_pos();
     for (uint64_t i = 0; i < high_pos.size(); i++) {
         if (high_pos[i][0] == row && high_pos[i][1] <= pos && high_pos[i][2] >= pos) {
-            dc.SetTextForeground(wxColour(255, 255, 0));
+            if (high_pos[i][3] == 0) {
+                dc.SetTextForeground(wxColour(0, 0, 255));
+            } else if (high_pos[i][3] == 1) {
+                dc.SetTextForeground(wxColour(255, 255, 0));
+            } else if (high_pos[i][3] == 2) {
+                dc.SetTextForeground(wxColour(255, 255, 255));
+            } else if (high_pos[i][3] == 3) {
+                dc.SetTextForeground(wxColour(255, 0, 0));
+            } else if (high_pos[i][3] == 4) {
+                dc.SetTextForeground(wxColour(110, 110, 110));
+            }
             break;
         }
     }
