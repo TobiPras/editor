@@ -13,6 +13,7 @@ void Editor::set_filename(std::string filename) {
     filename_ = filename;
     set_extention();
     load_file();
+    filename_input_ = false;
 }
 
 
@@ -77,12 +78,9 @@ void Editor::set_end_mark(std::pair<int, int> pos) {
 
 
 void Editor::save_file() {
-    if (filename_.empty()) {
-        filename_input_ = true;
-        return ;
-    }
     set_extention();
     create_file();
+    filename_input_ = false;
 }
 
 
@@ -93,7 +91,6 @@ void Editor::create_file() {
         out << line << '\n';
     }
     out.close();
-    filename_input_ = false;
 }
 
 

@@ -38,20 +38,24 @@ public:
     void set_filename(std::string filename);
     void write_filename(char chr) { filename_.push_back(chr); }
     void delete_filename() { filename_.pop_back(); }
+    void clear_filename() { filename_.clear(); }
 
     void load_file();
     void save_file();
     void create_file();
+
+    void syntax_high();
+    void clear_text() { text_.clear(); }
 
     void set_pos(std::pair<int, int> pos);
     void set_start_mark(std::pair<int, int> pos);
     void set_end_mark(std::pair<int, int> pos);
     void set_extention();
     void set_keywords_regex();
-
-    void syntax_high();
+    void set_input_filename() { filename_input_ = true; }
 
     bool is_filename_input() { return filename_input_; }
+    bool is_filename_empty() { return filename_.empty(); }
 
     std::vector<std::string> get_text() const { return text_; }
 

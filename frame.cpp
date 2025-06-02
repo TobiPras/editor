@@ -28,12 +28,27 @@ MainFrame::MainFrame(const wxString& title, std::string filename)
 }
 
 
+void MainFrame::set_title() {
+    if (!editor_.is_filename_empty()) {
+        std::string str = "Texteditor - " + editor_.get_filename();
+        SetTitle(str);
+    }
+}
+
+
 void MainFrame::on_key_input(wxKeyEvent& event) {
     char key = char(event.GetKeyCode());
     //std::cout << key << std::endl;
     if (editor_.is_filename_input()) {
         if (key == 13) {
-            editor_.save_file();
+            if (editor_.get_filename().empty()) {
+                editor_.set_input_filename();
+                status_bar_->SetStatusText("filename: ");
+                return ;
+            }
+            if (open_new_) editor_.set_filename(editor_.get_filename());
+            else editor_.save_file();
+            set_title();
         } else if (key == 8) {
             editor_.delete_filename();
         } else if (key >= 32 && key <= 126) {
@@ -52,17 +67,35 @@ void MainFrame::on_key_input(wxKeyEvent& event) {
 
 void MainFrame::on_keydown(wxKeyEvent& event) {
     //std::cout << event.GetKeyCode() << std::endl;
-    if (event.GetKeyCode() == 'S' && event.ControlDown()) {
-        editor_.save_file();
-        if (editor_.is_filename_input()) {
-            status_bar_->SetStatusText("filename: ");
+    if (event.ControlDown()) {
+        switch (event.GetKeyCode()) {
+            case 'S':
+                if (event.ShiftDown()) editor_.clear_filename();
+                if (editor_.get_filename().empty()) {
+                    editor_.set_input_filename();
+                    status_bar_->SetStatusText("filename: ");
+                    return ;
+                }
+                if (open_new_) editor_.set_filename(editor_.get_filename());
+                else editor_.save_file();
+                set_title();
+                break;
+            case 'C':
+                copy_text();
+                break;
+            case 'V':
+                paste_text();
+                break;
+            case 'X':
+                copy_text();
+                delete_selected();
+                break;
+            case 'O':
+                editor_.clear_filename();
+                editor_.set_input_filename();
+                open_new_ = true;
+                break;
         }
-        return;
-    } else if (event.GetKeyCode() == 'C' && event.ControlDown()) copy_text();
-    else if (event.GetKeyCode() == 'V' && event.ControlDown()) paste_text();
-    else if (event.GetKeyCode() == 'X' && event.ControlDown()) {
-        copy_text();
-        delete_selected();
     }
 
     bool arrow = false;

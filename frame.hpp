@@ -14,6 +14,8 @@ class MainFrame : public wxFrame {
 public:
     MainFrame(const wxString& title, std::string filename = "");
 private:
+    void set_title();
+
     void on_key_input(wxKeyEvent& event);
     void on_keydown(wxKeyEvent& event);
     void on_paint(wxPaintEvent& event);
@@ -43,6 +45,7 @@ private:
     int offset = 15;
 
     bool mark_mode_ = false;
+    bool open_new_ = false;
 };
 
 #endif
