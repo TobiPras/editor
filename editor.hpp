@@ -37,7 +37,7 @@ public:
 
     void set_filename(std::string filename);
     void write_filename(char chr) { filename_.push_back(chr); }
-    void delete_filename() { filename_.pop_back(); }
+    void delete_filename();
     void clear_filename() { filename_.clear(); }
 
     void load_file();

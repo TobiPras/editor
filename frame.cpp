@@ -30,7 +30,7 @@ MainFrame::MainFrame(const wxString& title, std::string filename)
 
 void MainFrame::set_title() {
     if (!editor_.is_filename_empty()) {
-        std::string str = "Texteditor - " + editor_.get_filename();
+        std::string str = "Text Editor - " + editor_.get_filename();
         SetTitle(str);
     }
 }
@@ -43,7 +43,7 @@ void MainFrame::on_key_input(wxKeyEvent& event) {
         if (key == 13) {
             if (editor_.get_filename().empty()) {
                 editor_.set_input_filename();
-                status_bar_->SetStatusText("filename: ");
+                status_bar_->SetStatusText("Filename: ");
                 return ;
             }
             if (open_new_) {
@@ -58,7 +58,7 @@ void MainFrame::on_key_input(wxKeyEvent& event) {
             editor_.write_filename(key);
         }
         if (editor_.is_filename_input()) {
-            std::string str = "filename: " + editor_.get_filename();
+            std::string str = "Filename: " + editor_.get_filename();
             status_bar_->SetStatusText(str);
         } else status_bar_->SetStatusText("");
     } else if (key >= 32 && key <= 126) {
@@ -76,7 +76,7 @@ void MainFrame::on_keydown(wxKeyEvent& event) {
                 if (event.ShiftDown()) editor_.clear_filename();
                 if (editor_.get_filename().empty()) {
                     editor_.set_input_filename();
-                    status_bar_->SetStatusText("filename: ");
+                    status_bar_->SetStatusText("Filename: ");
                     return ;
                 }
                 if (open_new_) {

@@ -17,6 +17,13 @@ void Editor::set_filename(std::string filename) {
 }
 
 
+void Editor::delete_filename() {
+    if (!filename_.empty()) {
+        filename_.pop_back();
+    }
+}
+
+
 void Editor::set_extention() {
     if (!filename_.empty()) {
         std::string ext;

@@ -368,7 +368,7 @@ TEST_CASE("Editor saves and loads correctly", "[Save/Load]") {
 
 TEST_CASE("Filename input logic", "[FilenameInput]") {
     Editor ed;
-    CHECK_FALSE(ed.is_filename_input());
+    CHECK(!ed.is_filename_input());
 
     ed.set_input_filename();
     CHECK(ed.is_filename_input());
@@ -399,31 +399,31 @@ TEST_CASE("Syntax highlighting", "[Highlighting]") {
     REQUIRE(!ed.get_high_pos().empty());
 
     SECTION("Comment detection") {
-        CHECK(ed.get_high_pos()[0][0] == 0 &&
-                ed.get_high_pos()[0][1] == 13 &&
-                ed.get_high_pos()[0][2] == ed.get_text()[0].size() - 1 &&
-                ed.get_high_pos()[0][3] == 0)
+        CHECK(ed.get_high_pos()[0][0] == 0);
+        CHECK(ed.get_high_pos()[0][1] == 13);
+        CHECK(ed.get_high_pos()[0][2] == ed.get_text()[0].size() - 1);
+        CHECK(ed.get_high_pos()[0][3] == 0);
     }
 
     SECTION("Double quotes detection") {
-        CHECK(ed.get_high_pos()[1][0] == 1 &&
-        ed.get_high_pos()[1][1] == 0 &&
-        ed.get_high_pos()[1][2] == ed.get_text()[1].size() - 1 &&
-        ed.get_high_pos()[1][3] == 1)
+        CHECK(ed.get_high_pos()[1][0] == 1);
+        CHECK(ed.get_high_pos()[1][1] == 0);
+        CHECK(ed.get_high_pos()[1][2] == ed.get_text()[1].size() - 1);
+        CHECK(ed.get_high_pos()[1][3] == 1);
     }
 
     SECTION("keyword detection") {
-        CHECK(ed.get_high_pos()[2][0] == 2 &&
-        ed.get_high_pos()[2][1] == 0 &&
-        ed.get_high_pos()[2][2] == 3 &&
-        ed.get_high_pos()[2][3] == 3)
+        CHECK(ed.get_high_pos()[2][0] == 2);
+        CHECK(ed.get_high_pos()[2][1] == 0);
+        CHECK(ed.get_high_pos()[2][2] == 3);
+        CHECK(ed.get_high_pos()[2][3] == 3);
     }
 
     SECTION("Single quotes detection") {
-        CHECK(ed.get_high_pos()[2][0] == 2 &&
-        ed.get_high_pos()[2][1] == 9 &&
-        ed.get_high_pos()[2][2] == 11 &&
-        ed.get_high_pos()[2][3] == 2)
+        CHECK(ed.get_high_pos()[2][0] == 2);
+        CHECK(ed.get_high_pos()[2][1] == 9);
+        CHECK(ed.get_high_pos()[2][2] == 11);
+        CHECK(ed.get_high_pos()[2][3] == 2);
     }
 }
 
