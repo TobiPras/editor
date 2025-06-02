@@ -3,7 +3,7 @@ A lightweight, cross-platform text editor built from scratch using C++ and wxWid
 
 ## Compile and Run the Project
 
-### Compile
+#### Compile
 ```shell
 mkdir build
 cd build
@@ -11,12 +11,12 @@ cmake ..
 make -j8
 ```
 
-### Run Application
+#### Run Application
 ```shell
 ./text_editor
 ```
 
-### Run Tests
+#### Run Tests
 ```shell
 ./editor_tests
 ```
@@ -40,4 +40,4 @@ make -j8
   - `Ctrl+C`, `Ctrl+V`, `Ctrl+X
 
 ## License
-This project is licensed under the MIT License – see the LICENSE for details.
+This project is licensed under the MIT License – see the [LICENSE](LICENSE) for details.
