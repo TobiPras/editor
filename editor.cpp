@@ -184,13 +184,18 @@ void Editor::move(Direction direction) {
 
 
 void Editor::set_keywords_regex() {
+    regex_keywords_.push_back("//.*");
+    regex_keywords_.push_back("\"(\\\\.|[^\"])*\"");
+    regex_keywords_.push_back("'(\\\\.|[^'])*'");
+
+    uint64_t offset = regex_keywords_.size();
     for (uint64_t type = 0; type < keywords.size(); type++) {
         regex_keywords_.push_back("\\b(");
         for (uint64_t i = 0; i < keywords[type].size(); i++) {
-            regex_keywords_[type] += keywords[type][i];
-            if (i != keywords[type].size() - 1) regex_keywords_[type] += "|";
+            regex_keywords_[offset + type] += keywords[type][i];
+            if (i != keywords[type].size() - 1) regex_keywords_[offset + type] += "|";
         }
-        regex_keywords_[type] += ")\\b";
+        regex_keywords_[offset + type] += ")\\b";
     }
 }
 

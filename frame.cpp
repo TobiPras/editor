@@ -46,7 +46,10 @@ void MainFrame::on_key_input(wxKeyEvent& event) {
                 status_bar_->SetStatusText("filename: ");
                 return ;
             }
-            if (open_new_) editor_.set_filename(editor_.get_filename());
+            if (open_new_) {
+                editor_.set_filename(editor_.get_filename());
+                open_new_ = false;
+            }
             else editor_.save_file();
             set_title();
         } else if (key == 8) {
@@ -76,7 +79,10 @@ void MainFrame::on_keydown(wxKeyEvent& event) {
                     status_bar_->SetStatusText("filename: ");
                     return ;
                 }
-                if (open_new_) editor_.set_filename(editor_.get_filename());
+                if (open_new_) {
+                    editor_.set_filename(editor_.get_filename());
+                    open_new_ = false;
+                }
                 else editor_.save_file();
                 set_title();
                 break;
@@ -260,6 +266,7 @@ void MainFrame::render(wxAutoBufferedPaintDC& dc) {
     uint32_t row = 0;
 
     draw_pos(dc);
+    editor_.syntax_high();
 
     for (std::string str : editor_.get_text()) {
         wxSize str_size = dc.GetTextExtent(wxString(str));
@@ -281,15 +288,15 @@ void MainFrame::draw_text(wxAutoBufferedPaintDC& dc, char chr, uint32_t row, uin
     for (uint64_t i = 0; i < high_pos.size(); i++) {
         if (high_pos[i][0] == row && high_pos[i][1] <= pos && high_pos[i][2] >= pos) {
             if (high_pos[i][3] == 0) {
-                dc.SetTextForeground(wxColour(0, 0, 255));
-            } else if (high_pos[i][3] == 1) {
-                dc.SetTextForeground(wxColour(255, 255, 0));
-            } else if (high_pos[i][3] == 2) {
-                dc.SetTextForeground(wxColour(255, 255, 255));
-            } else if (high_pos[i][3] == 3) {
-                dc.SetTextForeground(wxColour(255, 0, 0));
-            } else if (high_pos[i][3] == 4) {
                 dc.SetTextForeground(wxColour(110, 110, 110));
+            } else if (high_pos[i][3] == 1 || high_pos[i][3] == 2) {
+                dc.SetTextForeground(wxColour(200, 0, 0));
+            } else if (high_pos[i][3] == 3) {
+                dc.SetTextForeground(wxColour(0, 0, 180));
+            } else if (high_pos[i][3] == 4) {
+                dc.SetTextForeground(wxColour(255, 255, 0));
+            } else if (high_pos[i][3] == 5) {
+                dc.SetTextForeground(wxColour(255, 255, 255));
             }
             break;
         }
