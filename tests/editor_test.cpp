@@ -365,3 +365,66 @@ TEST_CASE("Editor saves and loads correctly", "[Save/Load]") {
     }
 }
 
+
+TEST_CASE("Filename input logic", "[FilenameInput]") {
+    Editor ed;
+    CHECK_FALSE(ed.is_filename_input());
+
+    ed.set_input_filename();
+    CHECK(ed.is_filename_input());
+
+    ed.clear_filename();
+    CHECK(ed.get_filename().empty());
+}
+
+
+TEST_CASE("Syntax highlighting", "[Highlighting]") {
+    Editor ed;
+    ed.set_filename("test.cpp");
+    ed.set_keywords_regex();
+
+    std::string l1 = "int main() { // hahaha";
+    std::string l2 = "\"hello dear\";";
+    std::string l3 = "char c = 'x';";
+    std::vector<std::string> lines {l1, l2, l3};
+
+    for (std::string l : lines) {
+        for (char chr : l) {
+            ed.write_text(chr);
+        }
+        ed.string_from_pos();
+    }
+    ed.delete_text();
+
+    REQUIRE(!ed.get_high_pos().empty());
+
+    SECTION("Comment detection") {
+        CHECK(ed.get_high_pos()[0][0] == 0 &&
+                ed.get_high_pos()[0][1] == 13 &&
+                ed.get_high_pos()[0][2] == ed.get_text()[0].size() - 1 &&
+                ed.get_high_pos()[0][3] == 0)
+    }
+
+    SECTION("Double quotes detection") {
+        CHECK(ed.get_high_pos()[1][0] == 1 &&
+        ed.get_high_pos()[1][1] == 0 &&
+        ed.get_high_pos()[1][2] == ed.get_text()[1].size() - 1 &&
+        ed.get_high_pos()[1][3] == 1)
+    }
+
+    SECTION("keyword detection") {
+        CHECK(ed.get_high_pos()[2][0] == 2 &&
+        ed.get_high_pos()[2][1] == 0 &&
+        ed.get_high_pos()[2][2] == 3 &&
+        ed.get_high_pos()[2][3] == 3)
+    }
+
+    SECTION("Single quotes detection") {
+        CHECK(ed.get_high_pos()[2][0] == 2 &&
+        ed.get_high_pos()[2][1] == 9 &&
+        ed.get_high_pos()[2][2] == 11 &&
+        ed.get_high_pos()[2][3] == 2)
+    }
+}
+
+
