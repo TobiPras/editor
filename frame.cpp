@@ -63,6 +63,16 @@ void MainFrame::on_key_input(wxKeyEvent& event) {
         } else status_bar_->SetStatusText("");
     } else if (key >= 32 && key <= 126) {
         editor_.write_text(key);
+        if (key == 34 || key == 39) {
+            editor_.write_text(key);
+            editor_.set_pos({editor_.get_line(), editor_.get_pos() - 1});
+        } else if (key == 40) {
+            editor_.write_text(key + 1);
+            editor_.set_pos({editor_.get_line(), editor_.get_pos() - 1});
+        } else if (key == 60 || key == 91 || key == 123) {
+            editor_.write_text(key + 2);
+            editor_.set_pos({editor_.get_line(), editor_.get_pos() - 1});
+        }
     }
     Refresh();
 }
