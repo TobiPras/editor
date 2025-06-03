@@ -35,7 +35,7 @@ void Editor::set_extention() {
                 ext.push_back(filename_[i]);
             }
         }
-        if (ext.size()) {
+        if (!ext.empty()) {
             file_ext_ = ext;
             if (ext == ".cpp") {
                 set_keywords_regex();
@@ -47,6 +47,9 @@ void Editor::set_extention() {
 
 
 void Editor::load_file() {
+    syntax_high_ = false;
+    set_extention();
+    high_pos_.clear();
     std::ifstream in(filename_);
     if (!in.is_open()) return ;
 
@@ -58,6 +61,7 @@ void Editor::load_file() {
     in.close();
     if (text_.empty()) text_.push_back("");
     if (syntax_high_) syntax_high();
+    // std::cout << syntax_high_ << std::endl;
 }
 
 
@@ -208,7 +212,7 @@ void Editor::set_keywords_regex() {
 
 
 void Editor::syntax_high() {
-    if (regex_keywords_.empty()) return;
+    if (regex_keywords_.empty() || !syntax_high_) return;
     high_pos_.clear();
     for (uint64_t type = 0; type < regex_keywords_.size(); type++) {
         std::regex regex(regex_keywords_[type]);
