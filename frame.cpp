@@ -72,7 +72,7 @@ void MainFrame::on_key_input(wxKeyEvent& event) {
         } else if (key == 40) {
             editor_.write_text(key + 1);
             editor_.set_pos({editor_.get_line(), editor_.get_pos() - 1});
-        } else if (key == 60 || key == 91 || key == 123) {
+        } else if (key == 91 || key == 123) {
             editor_.write_text(key + 2);
             editor_.set_pos({editor_.get_line(), editor_.get_pos() - 1});
         }
@@ -124,8 +124,10 @@ void MainFrame::on_keydown(wxKeyEvent& event) {
                 if (!editor_.get_mark_pos().empty()) {
                     if (editor_.get_mark_pos()[0] != editor_.get_mark_pos()[1]) {
                         delete_selected();
-                    } else editor_.delete_text();
-                } else editor_.delete_text();
+                        break;
+                    }
+                }
+                editor_.delete_text();
                 break;
             case 9:
                 for (int i = 0; i < 4; i++) editor_.write_text(32);
