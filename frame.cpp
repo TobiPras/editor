@@ -11,6 +11,7 @@ MainFrame::MainFrame(const wxString& title, std::string filename)
     panel_ = new wxScrolledWindow(this, wxID_ANY);
     panel_->SetScrollRate(offset, pixel_height);
     panel_->SetBackgroundStyle(wxBG_STYLE_PAINT);
+    panel_->SetBackgroundColour(wxColour(55, 55, 55));
     panel_->SetCursor(wxCURSOR_IBEAM);
     panel_->SetFocus();
 
@@ -25,6 +26,7 @@ MainFrame::MainFrame(const wxString& title, std::string filename)
     panel_->Bind(wxEVT_MOTION, &MainFrame::on_mouse_move, this);
 
     editor_.set_filename(filename);
+    wxColour bg = panel_->GetBackgroundColour();
 }
 
 

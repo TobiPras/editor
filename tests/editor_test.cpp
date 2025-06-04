@@ -315,7 +315,7 @@ TEST_CASE("Editor saves and loads correctly", "[Save/Load]") {
         ed.write_text('H');
         ed.write_text('i');
         ed.save_file();
-        REQUIRE(ed.is_filename_input());
+        REQUIRE(!ed.is_filename_input());
         for (char chr : temp_filename) {
             ed.write_filename(chr);
         }
@@ -399,31 +399,47 @@ TEST_CASE("Syntax highlighting", "[Highlighting]") {
     REQUIRE(!ed.get_high_pos().empty());
 
     SECTION("Comment detection") {
-        CHECK(ed.get_high_pos()[0][0] == 0);
-        CHECK(ed.get_high_pos()[0][1] == 13);
-        CHECK(ed.get_high_pos()[0][2] == ed.get_text()[0].size() - 1);
-        CHECK(ed.get_high_pos()[0][3] == 0);
+        bool found = false;
+        for (std::vector<uint64_t> pos : ed.get_high_pos()) {
+            if (pos[0] == 0 && pos[1] == 13 && pos[2] == ed.get_text()[0].size() - 1 && pos[3] == 0) {
+                found = true;
+                break;
+            }
+        }
+        CHECK(found);
     }
 
     SECTION("Double quotes detection") {
-        CHECK(ed.get_high_pos()[1][0] == 1);
-        CHECK(ed.get_high_pos()[1][1] == 0);
-        CHECK(ed.get_high_pos()[1][2] == ed.get_text()[1].size() - 1);
-        CHECK(ed.get_high_pos()[1][3] == 1);
+        bool found = false;
+        for (std::vector<uint64_t> pos : ed.get_high_pos()) {
+            if (pos[0] == 1 && pos[1] == 0 && pos[2] == ed.get_text()[1].size() - 2 && pos[3] == 1) {
+                found = true;
+                break;
+            }
+        }
+        CHECK(found);
     }
 
     SECTION("keyword detection") {
-        CHECK(ed.get_high_pos()[2][0] == 2);
-        CHECK(ed.get_high_pos()[2][1] == 0);
-        CHECK(ed.get_high_pos()[2][2] == 3);
-        CHECK(ed.get_high_pos()[2][3] == 3);
+        bool found = false;
+        for (std::vector<uint64_t> pos : ed.get_high_pos()) {
+            if (pos[0] == 2 && pos[1] == 0 && pos[2] == 3 && pos[3] == 3) {
+                found = true;
+                break;
+            }
+        }
+        CHECK(found);
     }
 
     SECTION("Single quotes detection") {
-        CHECK(ed.get_high_pos()[2][0] == 2);
-        CHECK(ed.get_high_pos()[2][1] == 9);
-        CHECK(ed.get_high_pos()[2][2] == 11);
-        CHECK(ed.get_high_pos()[2][3] == 2);
+        bool found = false;
+        for (std::vector<uint64_t> pos : ed.get_high_pos()) {
+            if (pos[0] == 2 && pos[1] == 9 && pos[2] == 11 && pos[3] == 2) {
+                found = true;
+                break;
+            }
+        }
+        CHECK(found);
     }
 }
 

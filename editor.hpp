@@ -11,7 +11,7 @@
 
 
 const std::vector<std::vector<std::string>> keywords = {
-    {"int", "float", "double", "bool", "void", "const", "static"},
+    {"int", "float", "double", "bool", "void", "const", "static", "char"},
     {"return", "if", "else", "for", "while", "switch", "case", "break", "continue", "default", "try", "catch"},
     {"namespace", "class", "public", "private", "protected", "virtual", "override", "new", "delete", "try", "catch", "using", "this"}
 };
