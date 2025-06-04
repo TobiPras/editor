@@ -17,6 +17,7 @@ MainFrame::MainFrame(const wxString& title, std::string filename)
 
     status_bar_ = CreateStatusBar();
     status_bar_->SetBackgroundColour(wxColour(35, 35, 35));
+    status_bar_->SetForegroundColour(wxColour(220, 220, 220));
 
     panel_->Bind(wxEVT_CHAR, &MainFrame::on_key_input, this);
     panel_->Bind(wxEVT_KEY_DOWN, &MainFrame::on_keydown, this);
@@ -267,6 +268,8 @@ std::pair<int, int> MainFrame::cursor_to_pos(wxPoint point) {
 void MainFrame::on_paint([[maybe_unused]] wxPaintEvent& event) {
     wxAutoBufferedPaintDC dc(panel_);
     panel_->DoPrepareDC(dc);
+    dc.SetBackground(wxBrush(panel_->GetBackgroundColour()));
+    dc.Clear();
     dc.SetFont(wxFontInfo(11).Family(wxFONTFAMILY_TELETYPE));
     dc.GetTextExtent("a", &text_width_, &text_height_);
     render(dc);
