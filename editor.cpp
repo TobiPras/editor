@@ -51,9 +51,12 @@ void Editor::load_file() {
     set_extention();
     high_pos_.clear();
     std::ifstream in(filename_);
-    if (!in.is_open()) return ;
-
     text_.clear();
+    if (!in.is_open()) {
+        text_.push_back("");
+        return ;
+    }
+
     std::string line;
     while (std::getline(in, line)) {
         text_.push_back(line);
@@ -61,7 +64,6 @@ void Editor::load_file() {
     in.close();
     if (text_.empty()) text_.push_back("");
     if (syntax_high_) syntax_high();
-    // std::cout << syntax_high_ << std::endl;
 }
 
 
